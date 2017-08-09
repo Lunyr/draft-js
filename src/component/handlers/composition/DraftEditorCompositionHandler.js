@@ -62,7 +62,11 @@ var DraftEditorCompositionHandler = {
    * `compositionend` events that they fire.
    */
   onBeforeInput: function(editor: DraftEditor, e: SyntheticInputEvent<>): void {
-    beforeInputData = (beforeInputData || '') + e.data;
+    if (DraftFeatureFlags.draft_enable_composition_fixes) {
+      beforeInputData = (beforeInputData || '') + e.data;
+    } else {
+      textInputData = (textInputData || '') + e.data;
+    }
   },
 
   /**
@@ -81,7 +85,9 @@ var DraftEditorCompositionHandler = {
     editor: DraftEditor,
     e: SyntheticInputEvent<>,
   ): void {
-    compositionUpdateData = e.data;
+    if (DraftFeatureFlags.draft_enable_composition_fixes) {
+      compositionUpdateData = e.data;
+    }
   },
 
   /**
@@ -104,8 +110,10 @@ var DraftEditorCompositionHandler = {
   ): void {
     resolved = false;
     stillComposing = false;
-    // Use e.data from the first compositionend event seen
-    compositionEndData = compositionEndData || e.data;
+    if (DraftFeatureFlags.draft_enable_composition_fixes) {
+      // Use e.data from the first compositionend event seen
+      compositionEndData = compositionEndData || e.data;
+    }
     setTimeout(() => {
       if (!resolved) {
         DraftEditorCompositionHandler.resolveComposition(editor);

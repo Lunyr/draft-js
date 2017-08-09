@@ -18,7 +18,10 @@ jest.disableAutomock();
 jest.useFakeTimers();
 
 var EditorState = require('EditorState');
+const DraftFeatureFlags = require('DraftFeatureFlags');
+const originalEnableCompositionFixesValue = DraftFeatureFlags.draft_enable_composition_fixes;
 
+<<<<<<< HEAD
 // The DraftEditorCompositionHandler contains some global state
 // (internally used to make the code simpler given that only one
 // composition can be happening at a given time), so to avoid
@@ -37,6 +40,52 @@ beforeEach(() => {
     restoreEditorDOM: jest.fn(),
     exitCurrentMode: jest.fn(),
     update: jest.fn(state => (editor._latestEditorState = state)),
+=======
+describe('DraftEditorCompositionHandler', () => {
+  // The DraftEditorCompositionHandler contains some global state
+  // (internally used to make the code simpler given that only one
+  // composition can be happening at a given time), so to avoid
+  // false-positive failures stemming from test cases putting
+  // the module in a bad state we forcibly reload it each test.
+  let compositionHandler = null;
+
+  beforeEach(() => {
+    jest.resetModules();
+    compositionHandler = require('DraftEditorCompositionHandler');
+  });
+
+  // Initialization of mock editor component that will be used for all tests
+  let editor;
+
+  beforeEach(() => {
+    editor = {
+      _latestEditorState: EditorState.createEmpty(),
+
+      _onKeyDown: jest.fn(),
+
+      restoreEditorDOM: jest.fn(),
+      exitCurrentMode: jest.fn(),
+
+      update: jest.fn(state => editor._latestEditorState = state),
+    };
+  });
+
+  // newly added tests require feature flagged behaviors
+  beforeEach(() => {
+    DraftFeatureFlags
+      .draft_enable_composition_fixes = true;
+  });
+  afterEach(() => {
+    DraftFeatureFlags
+      .draft_enable_composition_fixes = originalEnableCompositionFixesValue;
+  });
+
+  const editorTextContent = () => {
+    const newState = editor._latestEditorState;
+    const newContent = newState.getCurrentContent();
+
+    return newContent.getFirstBlock().getText();
+>>>>>>> Put new composition fixes behind a feature flag
   };
 });
 
