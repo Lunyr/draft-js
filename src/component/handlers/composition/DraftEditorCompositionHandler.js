@@ -147,6 +147,7 @@ var DraftEditorCompositionHandler = {
 
   /**
    * Normalizes platform inconsistencies with input event data.
+<<<<<<< HEAD
    *
    * When beforeInputData is present, it is only preferred if its length
    * is greater than that of the last compositionUpdate event data. This is
@@ -158,6 +159,19 @@ var DraftEditorCompositionHandler = {
    * This resolves issues with some platforms where beforeInput is never fired
    * (e.g. Android with certain keyboard and browser combinations).
    *
+=======
+   * 
+   * When beforeInputData is present, it is only preferred if its length
+   * is greater than that of the last compositionUpdate event data. This is
+   * meant to resolve IME incosistencies where compositionUpdate may contain 
+   * only the last character or the entire composition depending on language
+   * (e.g. Korean vs. Japanese).
+   * 
+   * When beforeInputData is not present, compositionUpdate data is preferred.
+   * This resolves issues with some platforms where beforeInput is never fired
+   * (e.g. Android with certain keyboard and browser combinations).
+   * 
+>>>>>>> Normalize beforeInput and compositionUpdate data
    * Lastly, if neither beforeInput nor compositionUpdate events are fired, use
    * the data in the compositionEnd event
    */
