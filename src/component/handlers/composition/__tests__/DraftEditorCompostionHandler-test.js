@@ -19,9 +19,15 @@ jest.useFakeTimers();
 
 var EditorState = require('EditorState');
 const DraftFeatureFlags = require('DraftFeatureFlags');
+<<<<<<< HEAD
 const originalEnableCompositionFixesValue = DraftFeatureFlags.draft_enable_composition_fixes;
 
 <<<<<<< HEAD
+=======
+const originalEnableCompositionFixesValue =
+  DraftFeatureFlags.draft_enable_composition_fixes;
+
+>>>>>>> Convert DraftEditorCompositionHandler tests to root tests + snapshots
 // The DraftEditorCompositionHandler contains some global state
 // (internally used to make the code simpler given that only one
 // composition can be happening at a given time), so to avoid
@@ -40,6 +46,7 @@ beforeEach(() => {
     restoreEditorDOM: jest.fn(),
     exitCurrentMode: jest.fn(),
     update: jest.fn(state => (editor._latestEditorState = state)),
+<<<<<<< HEAD
 =======
 describe('DraftEditorCompositionHandler', () => {
   // The DraftEditorCompositionHandler contains some global state
@@ -89,6 +96,16 @@ describe('DraftEditorCompositionHandler', () => {
   };
 });
 
+=======
+  };
+  DraftFeatureFlags.draft_enable_composition_fixes = true;
+});
+
+afterEach(() => {
+  DraftFeatureFlags.draft_enable_composition_fixes = originalEnableCompositionFixesValue;
+});
+
+>>>>>>> Convert DraftEditorCompositionHandler tests to root tests + snapshots
 const editorTextContent = () => {
   const newState = editor._latestEditorState;
   const newContent = newState.getCurrentContent();
@@ -129,10 +146,17 @@ test(
 
 test('Can handle compositionend + beforeInput (e.g. Desktop Japanese IME)', () => {
   const TEST_STRING = '私';
+<<<<<<< HEAD
 
   compositionHandler.onCompositionEnd(editor, {data: TEST_STRING});
   compositionHandler.onBeforeInput(editor, {data: TEST_STRING});
 
+=======
+
+  compositionHandler.onCompositionEnd(editor, {data: TEST_STRING});
+  compositionHandler.onBeforeInput(editor, {data: TEST_STRING});
+
+>>>>>>> Convert DraftEditorCompositionHandler tests to root tests + snapshots
   jest.runAllTimers();
   assertEditorStateSnapshot();
 });
@@ -260,6 +284,7 @@ test('Can handle a cancellation compositionend event', () => {
 
   expect(editor.exitCurrentMode).toBeCalled();
   expect(editorTextContent()).toBe('');
+<<<<<<< HEAD
 
   // After cancellation, the next composition should resolve correctly.
   compositionHandler.onCompositionEnd(editor, {data: TEST_STRING});
@@ -298,63 +323,66 @@ test('Can handle Japanese composition', () => {
 =======
     expect(editorTextContent()).toBe(TEST_STRING);
   });
+=======
 
-  it('Can handle Korean composition', () => {
-    const TEST_STRING = '하';
+  // After cancellation, the next composition should resolve correctly.
+  compositionHandler.onCompositionEnd(editor, {data: TEST_STRING});
+>>>>>>> Convert DraftEditorCompositionHandler tests to root tests + snapshots
 
-    compositionHandler.onCompositionUpdate(editor, {data: 'ㅎ'});
-    compositionHandler.onCompositionUpdate(editor, {data: '하'});
-    compositionHandler.onCompositionUpdate(editor, {data: '한'});
-    compositionHandler.onCompositionUpdate(editor, {data: '하'});
-    compositionHandler.onBeforeInput(editor, {data: '하'});
-    compositionHandler.onCompositionEnd(editor, {data: '하'});
+  jest.runAllTimers();
+  assertEditorStateSnapshot();
+});
 
-    jest.runAllTimers();
+test('Can handle Korean composition', () => {
+  compositionHandler.onCompositionUpdate(editor, {data: 'ㅎ'});
+  compositionHandler.onCompositionUpdate(editor, {data: '하'});
+  compositionHandler.onCompositionUpdate(editor, {data: '한'});
+  compositionHandler.onCompositionUpdate(editor, {data: '하'});
+  compositionHandler.onBeforeInput(editor, {data: '하'});
+  compositionHandler.onCompositionEnd(editor, {data: '하'});
 
-    expect(editorTextContent()).toBe(TEST_STRING);
-  });
+  jest.runAllTimers();
+  assertEditorStateSnapshot();
+});
 
-  it('Can handle Japanese composition', () => {
-    const TEST_STRING = '日本語';
-    
-    compositionHandler.onCompositionUpdate(editor, {data: 'ｎ'});
-    compositionHandler.onCompositionUpdate(editor, {data: 'に'});
-    compositionHandler.onCompositionUpdate(editor, {data: 'にｈ'});
-    compositionHandler.onCompositionUpdate(editor, {data: 'にほ'});
-    compositionHandler.onCompositionUpdate(editor, {data: 'にほｎ'});
-    compositionHandler.onCompositionUpdate(editor, {data: 'にほんｇ'});
-    compositionHandler.onCompositionUpdate(editor, {data: 'にほんご'});
-    compositionHandler.onCompositionUpdate(editor, {data: '日本語'});
-    compositionHandler.onBeforeInput(editor, {data: '日本語'});
-    compositionHandler.onCompositionEnd(editor, {data: '日本語'});
+test('Can handle Japanese composition', () => {
+  compositionHandler.onCompositionUpdate(editor, {data: 'ｎ'});
+  compositionHandler.onCompositionUpdate(editor, {data: 'に'});
+  compositionHandler.onCompositionUpdate(editor, {data: 'にｈ'});
+  compositionHandler.onCompositionUpdate(editor, {data: 'にほ'});
+  compositionHandler.onCompositionUpdate(editor, {data: 'にほｎ'});
+  compositionHandler.onCompositionUpdate(editor, {data: 'にほんｇ'});
+  compositionHandler.onCompositionUpdate(editor, {data: 'にほんご'});
+  compositionHandler.onCompositionUpdate(editor, {data: '日本語'});
+  compositionHandler.onBeforeInput(editor, {data: '日本語'});
+  compositionHandler.onCompositionEnd(editor, {data: '日本語'});
 
-    jest.runAllTimers();
+  jest.runAllTimers();
+  assertEditorStateSnapshot();
+});
 
-    expect(editorTextContent()).toBe(TEST_STRING);
-  });
+test('Can handle Chinese (simplified) composition', () => {
+  compositionHandler.onCompositionUpdate(editor, {data: 't'});
+  compositionHandler.onCompositionUpdate(editor, {data: "t't"});
+  compositionHandler.onCompositionUpdate(editor, {data: "t't'j"});
+  compositionHandler.onCompositionUpdate(editor, {data: '推土机'});
+  compositionHandler.onBeforeInput(editor, {data: '推土机'});
+  compositionHandler.onCompositionEnd(editor, {data: '推土机'});
 
-  it('Can handle Chinese (simplified) composition', () => {
-    const TEST_STRING = '推土机';
+  jest.runAllTimers();
+  assertEditorStateSnapshot();
+});
 
-    compositionHandler.onCompositionUpdate(editor, {data: 't'});
-    compositionHandler.onCompositionUpdate(editor, {data: 't\'t'});
-    compositionHandler.onCompositionUpdate(editor, {data: 't\'t\'j'});
-    compositionHandler.onCompositionUpdate(editor, {data: '推土机'});
-    compositionHandler.onBeforeInput(editor, {data: '推土机'});
-    compositionHandler.onCompositionEnd(editor, {data: '推土机'});
-
-    jest.runAllTimers();
-
-    expect(editorTextContent()).toBe(TEST_STRING);
-  });
-
-  it('Can handle input case where beforeInput is never fired,' +
-     'but composition update is', () => {
+test(
+  'Can handle input case where beforeInput is never fired,' +
+    'but composition update is',
+  () => {
     const TEST_STRING = 'foo bar';
     compositionHandler.onCompositionUpdate(editor, {data: TEST_STRING});
     compositionHandler.onCompositionEnd(editor, {data: TEST_STRING});
 
     jest.runAllTimers();
+<<<<<<< HEAD
 
     expect(editorTextContent()).toBe(TEST_STRING);
   });
@@ -382,6 +410,8 @@ test(
     compositionHandler.onCompositionEnd(editor, {data: TEST_STRING});
 
     jest.runAllTimers();
+=======
+>>>>>>> Convert DraftEditorCompositionHandler tests to root tests + snapshots
     assertEditorStateSnapshot();
   },
 );
